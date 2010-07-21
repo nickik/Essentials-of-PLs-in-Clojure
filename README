@@ -1,15 +1,11 @@
 # EssentialsOfProgrammingLanguages
 
-FIXME: write description
+I bought the book to learn about Programming Languages. I really look forward to reading this book and implement the examples in Clojure as far as that is possible. I hope I can learn more about PLs and Clojure. I'm happy for any feedback on my code.
 
 ## Usage
 
-FIXME: write
+Look at it :)
 
 ## Installation
 
-FIXME: write
-
-## License
-
-FIXME: write
+Run "lein deps"
