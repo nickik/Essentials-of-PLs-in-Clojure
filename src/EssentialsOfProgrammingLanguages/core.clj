@@ -113,20 +113,27 @@
 (defn sum-of-vec [v]
   (reduce + v))
 
+
 ;1.4 
 
+;1.15
+(defn duple [mal x]
+  (loop [lst '() mal mal]
+    (if (zero? mal) lst (recur (conj lst x) (dec mal)))))
 
-;exersise inlining
+;1.16
+(defn invert [coll]
+  (loop [coll coll newcoll []]
+    (if (seq coll)
+      (recur (vec (rest coll))
+             (conj newcoll (vec (reverse (first coll)))))
+      newcoll)))
+;1.17
+(defn down [coll]
+  (loop [newlist [] n 0]
+    (if (= (count coll) n)
+      newlist
+      (recur (conj newlist (list (nth coll n))) (inc n)))))
+;1.18
 
-(comment (defn inlining-subst [new old slist]
-  (let [inline-partial (partial inlining-subst new old)
-        subs-exp (fn  [sexp]
-                   (if (symbol? sexp)
-                     (if (= sexp old) new sexp)
-                     (inline-partial sexp)))]
-    (if (empty? slist)
-      '()
-      (cons
-       (subs-exp (first slist))
-       (inline-partial (rest slist)))))))
 
