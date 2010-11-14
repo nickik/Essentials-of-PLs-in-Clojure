@@ -134,6 +134,139 @@
     (if (= (count coll) n)
       newlist
       (recur (conj newlist (list (nth coll n))) (inc n)))))
+
 ;1.18
 
+(defn clj-swaper [lst c1 c2]
+  (loop [coll lst output []]
+    (if (seq coll)
+      (recur (rest coll)
+             (conj output (if (= c1 (first coll))
+                            c2
+                            (first coll))))
+      output)))
+
+
+;1.19
+
+(defn clj-coll-set [coll index x]
+  (loop [coll coll output []  i 0]
+    (if (seq coll)
+      (recur (rest coll) (conj output (if (= i index) x (first coll))) (inc i))
+      output)))
+
+;1.2
+
+(defn count-occurrences [item coll]
+  (cond
+     (empty? coll) 0
+     (seq? (first coll)) (+ (count-occurrences item (first coll))
+                            (count-occurrences item (rest coll)))
+     (= item (first coll)) (inc (count-occurrences item (rest coll)))
+     :else (+ 0 (count-occurrences item (rest coll)))))
+
+(defn count-occurrences-tail-call [item coll]
+  (count (filter (partial = item) (flatten coll))))
+
+;;1.21
+
+(defn product [sos1 sos2]
+  (mapcat (fn [item1]
+           (map (fn [item2]
+                  [item1 item2]) sos2))  sos1))
+;;1.22
+
+(defn clj-filter-in [pred coll]
+  (loop [coll coll output []]
+    (if (seq coll)
+      (if (pred (first coll))
+        (recur (rest coll) (conj output (first coll)))
+        (recur (rest coll) output))
+      output)))
+
+;;1.23
+
+(defn coll-index [pred coll]
+  (count (take-while #(not (number? %)) coll)))
+
+;;1.24
+
+(defn -every? [pred coll]
+  (loop [coll coll]
+    (if (empty? coll)
+      true
+      (if (pred (first coll))
+        (recur (rest coll))
+        false))))
+
+;;1.25
+
+(def -exists? (complement -every?))
+
+;;1.26
+
+(defn up [coll]
+  (println coll)
+  (cond
+   (empty? coll) coll
+   (seq? (first coll)) (concat (first coll) (up (rest coll)))
+   :else (conj (up (rest coll)) (first coll))))
+
+;;1.27
+
+(defn -flatten [coll]
+  (cond
+   (empty? coll) coll
+   (seq? (first coll)) (concat (flatten (first coll)) (flatten (rest coll)))
+   :else (conj (rest coll) (first coll))))
+
+;;1.28 merge
+
+(defn -merge [coll1 coll2]
+  (sort (concat coll1 coll2)))
+
+;1.31
+
+(def tree1 '(bar 1 (foo 1 2)))
+(def tree2
+     '(baz
+      (bar 1 (foo 1 2))
+      (biz 4 5)))
+
+
+
+;2 Data Abstruction
+
+2.1 
+
+(def base 16)
+
+(defn zero []
+  ())
+
+(defn is-zero? [n]
+  (empty? n))
+
+(defn predecessor [n]
+  (let [newnum (dec (first n))]
+         (if (<= newnum 0)
+           (rest n)
+           (cons newnum (rest n)))))
+
+(defn cessor [base n f]
+  (if (seq n)
+    (loop [lst n output '()]
+      (if (seq lst)
+        (let [newnum (f (first lst))]
+         (if (< newnum base)
+           (concat output  (cons newnum (rest lst)))
+           (recur (rest lst) (conj output (first lst)))))
+        output))))
+
+(defn succssor [n]
+  (if (= n (cessor base n inc))
+    (cons 1 n)))
+
+(defn getnum [n base]
+  (apply + (map (fn [hoch num] (* num (apply * (repeat hoch base))))  n (iterate inc 0))))
 
