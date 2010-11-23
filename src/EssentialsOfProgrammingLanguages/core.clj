@@ -233,40 +233,90 @@
       (bar 1 (foo 1 2))
       (biz 4 5)))
 
+(def leaf identity)
 
+(defn interior-node [sym branch1 branch2]
+  (conj (list branch1 branch2) sym))
+
+(defn leaf? [bintree]
+  (when-not (seq? bintree)
+    true))
+
+(defn lson [node]
+  (nth node 1))
+
+(defn rson [node]
+  (nth node 2 ))
+
+(defn contents-of [elem]
+  (if (leaf? elem)
+      elem
+      (first elem)))
+
+(defn double-tree [tree]
+  (if (leaf? tree)
+    (* 2 (contents-of tree))
+    (cons (contents-of tree) (map double-tree [(lson tree) (rson tree)]))))
+
+
+#_(define (red-depth tree depth)
+  (if (leaf? tree)
+      depth
+      (if (eq? (contents-of tree) 'red)
+        (cons (contents-of tree)
+              (list (red-depth (lson tree) (+ 1 depth))
+                    (red-depth (rson tree) (+ 1 depth))))
+        (cons (contents-of tree)
+              (list (red-depth (lson tree) depth)
+                    (red-depth (rson tree) depth))))))
+
+(defn mark-leaves-with-red-depth
+  ([tree] (mark-leaves-with-red-depth tree 0))
+  ([tree depth]
+     (if (leaf? tree)
+       depth
+       (cons (contents-of tree)
+             (if (= (contents-of tree) 'red)
+               [(mark-leaves-with-red-depth (lson tree) (inc depth))
+                (mark-leaves-with-red-depth (rson tree) (inc depth))]
+               [(mark-leaves-with-red-depth (lson tree) depth)
+                (mark-leaves-with-red-depth (rson tree) depth)])))))
+
+(def searchtree '(14 (7 () (12 () ()))
+                    (26 (20 (17 () ())
+                            ())
+                        (31 () ()))))
+(def easysearchtree '(14 (17 () (12 () ()))
+                        (26 () ())))
+
+
+(defn scheme-path [n bst]
+  (if (empty? bst)
+    false
+    (if (= (first bst) n)
+      []
+      (let [left (scheme-path n (nth bst 1))
+            right (scheme-path n (nth bst 2))]
+        (if (false? left)
+          (if (false? right)
+            false
+            (cons 'right right))
+          (cons 'left left))))))
+
+(defn spath [n tree way]
+  (cond
+   (empty? tree) []
+   (= n (first tree)) way
+   :else [(spath n (lson tree) (conj way 'left))
+          (spath n (rson tree) (conj way 'right))]))
+
+(defn path [n tree]
+  (flatten (spath n tree [])))
 
 ;2 Data Abstruction
 
 2.1 
 
 (def base 16)
-
-(defn zero []
-  ())
-
-(defn is-zero? [n]
-  (empty? n))
-
-(defn predecessor [n]
-  (let [newnum (dec (first n))]
-         (if (<= newnum 0)
-           (rest n)
-           (cons newnum (rest n)))))
-
-(defn cessor [base n f]
-  (if (seq n)
-    (loop [lst n output '()]
-      (if (seq lst)
-        (let [newnum (f (first lst))]
-         (if (< newnum base)
-           (concat output  (cons newnum (rest lst)))
-           (recur (rest lst) (conj output (first lst)))))
-        output))))
-
-(defn succssor [n]
-  (if (= n (cessor base n inc))
-    (cons 1 n)))
-
-(defn getnum [n base]
-  (apply + (map (fn [hoch num] (* num (apply * (repeat hoch base))))  n (iterate inc 0))))
+-
 
